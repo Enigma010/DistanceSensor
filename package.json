@@ -1,0 +1,29 @@
+{
+  "name": "distancesensor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --inspect-brk \"test/**/*.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enigma010/DistanceSensor.git"
+  },
+  "author": "Jeremy Jodarski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Enigma010/DistanceSensor/issues"
+  },
+  "homepage": "https://github.com/Enigma010/DistanceSensor#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "fs-extra": "^7.0.1",
+    "lodash": "^4.17.11",
+    "pigpio": "^1.2.2"
+  },
+  "devDependencies": {
+    "mocha": "^6.0.2"
+  }
+}
