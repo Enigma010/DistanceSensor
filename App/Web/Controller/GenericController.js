@@ -8,14 +8,19 @@ module.exports = class GenericController{
     }
 
     SetupHandleRequest(route, handler){
+
+        // Create an enclosure for the handler passed in bound to this context
         let handleFunc = _.bind(function(request, response){
             handler(request, response);
         }, this);
 
+        // Create another enclosure to the handle request which will enclose the request
+        // in a try catch block
         let handleRequestFunc = _.bind(function(request, response){
             this.HandleRequest(request, response, handleFunc);
         }, this);
 
+        // Post the responses back to the client
         this.Server.post(route, handleRequestFunc);
     }
 
@@ -30,25 +35,39 @@ module.exports = class GenericController{
 
     SendResponseFunc(response){
         return _.bind(function(error, data){
+            // Sends a generic data and error response back to the client
             let errorResponse = this.GetErrorResponse(error);
+            
+            // If there's no data then set the data to a default value
             if(_.isUndefined(data) || _.isNull(data)){
                 data = [];
             }
+
+            // Set the data in the response
             errorResponse.Data = data;
+
+            // Serialize the data out
             response.json(errorResponse);
         }, this);
     }
 
     SendResponse(error, data){
+        // Sends a generic data and error response back to the client
         let errorResponse = this.GetErrorResponse(error);
+
+        // If there's no data then set the data to a default value
         if(_.isUndefined(data) || _.isNull(data)){
             data = [];
         }
+
+        // Set the data in the response
         errorResponse.Data = data;
+
+        // Serialize the data out
         this.Response.json(errorResponse);
     }
 
-    GetErrorResponse(error){        
+    GetErrorResponse(error){   
         let response = null;
         if(error === null){
             response = new Response();

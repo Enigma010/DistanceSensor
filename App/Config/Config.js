@@ -3,6 +3,8 @@ const _ = require('lodash');
 module.exports = class Config{
     constructor(webListenOnPort, triggerPinNum, echoPinNum, maxDistance, minDistance, maxHistoryLength, 
         testRefreshMinutes, testFunction){
+
+        // This section either uses the values passed in or sets them to default values
         if(_.isUndefined(webListenOnPort) || _.isNull(webListenOnPort)){
             webListenOnPort = 3000;
         }
@@ -29,10 +31,13 @@ module.exports = class Config{
         if(_.isUndefined(maxHistoryLength) || _.isNull(maxHistoryLength)){
             maxHistoryLength = 3;
         }
+        // end section of setting defaults
 
+        // Construct the configuration objects based on the values
         this.Web = {
             ListenOnPort: webListenOnPort
         };
+
         this.DistanceSensor = {
             TriggerPinNum: triggerPinNum,
             EchoPinNum: echoPinNum,
@@ -44,5 +49,6 @@ module.exports = class Config{
                 TestFunction: testFunction
             }
         };
+
     }
 }
