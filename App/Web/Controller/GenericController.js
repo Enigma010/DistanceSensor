@@ -7,7 +7,7 @@ module.exports = class GenericController{
         this.Server = server;
     }
 
-    SetupHandleRequest(route, handler){
+    SetupHandleRequest(route, handler, requestType){
 
         // Create an enclosure for the handler passed in bound to this context
         let handleFunc = _.bind(function(request, response){
@@ -21,7 +21,15 @@ module.exports = class GenericController{
         }, this);
 
         // Post the responses back to the client
-        this.Server.post(route, handleRequestFunc);
+        if(requestType == 'GET'){
+            this.Server.get(route, handleRequestFunc);
+        }
+        else if(requestType == 'POST'){
+            this.Server.post(route, handleRequestFunc);
+        }
+        else{
+            this.Server.post(route, handleRequestFunc);
+        }
     }
 
     HandleRequest(request, response, handler){

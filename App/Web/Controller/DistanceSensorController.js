@@ -28,6 +28,6 @@ module.exports = class DistanceSensorController extends GenericController{
 
     Setup(){
         // Setup the route to read from the distance sensor
-        this.SetupHandleRequest('/DistanceSensor/read', _.bind(this.Read, this));
+        this.SetupHandleRequest('/DistanceSensor/read', _.bind(this.Read, this), 'GET');
     }
 }
