@@ -1,8 +1,9 @@
 const _ = require('lodash');
+const MqttClient = require('../Mqtt/Client.js');
 
 module.exports = class Config{
     constructor(webListenOnPort, triggerPinNum, echoPinNum, maxDistance, minDistance, maxHistoryLength, 
-        testRefreshMinutes, testFunction){
+        testRefreshMinutes, testFunction, mqttUrl){
 
         // This section either uses the values passed in or sets them to default values
         if(_.isUndefined(webListenOnPort) || _.isNull(webListenOnPort)){
@@ -31,6 +32,9 @@ module.exports = class Config{
         if(_.isUndefined(maxHistoryLength) || _.isNull(maxHistoryLength)){
             maxHistoryLength = 3;
         }
+        if(_.isUndefined(mqttUrl) || _.isNull(mqttUrl)){
+            mqttUrl = 'mqtt://xxx.xxx.xxx.xxx:1883';
+        }
         // end section of setting defaults
 
         // Construct the configuration objects based on the values
@@ -38,6 +42,9 @@ module.exports = class Config{
             ListenOnPort: webListenOnPort
         };
 
+        let mqttClient = new MqttClient(mqttUrl);
+
+        this.MqttClient = mqttClient;
         this.DistanceSensor = {
             TriggerPinNum: triggerPinNum,
             EchoPinNum: echoPinNum,
@@ -47,8 +54,8 @@ module.exports = class Config{
             Test: {
                 RefreshMinutes: testRefreshMinutes,
                 TestFunction: testFunction
-            }
+            },
+            DistanceChanged: _.bind(mqttClient.DistanceChanged, mqttClient)
         };
-
     }
 }

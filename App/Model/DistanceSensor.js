@@ -63,6 +63,9 @@ module.exports = class DistanceSensor{
         // Check if the current reading is valid if it is then use is
         if(this.IsValidDistance(distance)){
             this.CurrentDistance = distance;
+            if(this.Config.DistanceChanged !== undefined){
+                this.Config.DistanceChanged(distance);
+            }
             return;
         }
 
