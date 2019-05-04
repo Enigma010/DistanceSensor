@@ -2,60 +2,50 @@ const _ = require('lodash');
 const MqttClient = require('../Mqtt/Client.js');
 
 module.exports = class Config{
-    constructor(webListenOnPort, triggerPinNum, echoPinNum, maxDistance, minDistance, maxHistoryLength, 
-        testRefreshMinutes, testFunction, mqttUrl){
+    constructor(argv){
+        this.Web = {
+            ListenOnPort: argv.webListenOnPort
+        };
+
+        // Parse MQTT optional parameters if supplied
+        let mqttOptions = null;
+        if(!_.isUndefined(argv.mqttOptions)){
+            mqttOptions = JSON.parse(argv.mqttOptions);
+        }
+
+        // Take the parameters and put them in the distance sensor
+        this.DistanceSensor = {
+            TriggerPinNum: argv.triggerPinNum,
+            EchoPinNum: argv.echoPinNum,
+            MaxDistance: argv.maxDistance,
+            MinDistance: argv.minDistance,
+            MaxHistoryLength: argv.maxHistoryLength,
+            Mqtt: {
+                Url: argv.mqttUrl,
+                Options: mqttOptions,
+                ChannelPrefix: argv.mqttChannelPrefix
+            }
+        };
 
         // This section either uses the values passed in or sets them to default values
-        if(_.isUndefined(webListenOnPort) || _.isNull(webListenOnPort)){
-            webListenOnPort = 3000;
+        if(_.isUndefined(this.Web.ListenOnPort) || _.isNull(this.Web.ListenOnPort)){
+            this.Web.ListenOnPort = 3000;
         }
-        if(_.isUndefined(triggerPinNum) || _.isNull(triggerPinNum)){
-            triggerPinNum = 18;
+        if(_.isUndefined(this.DistanceSensor.TriggerPinNum) || _.isNull(this.DistanceSensor.TriggerPinNum)){
+            this.DistanceSensor.TriggerPinNum = 18;
         }
-        if(_.isUndefined(echoPinNum) || _.isNull(echoPinNum)){
-            echoPinNum = 24;
+        if(_.isUndefined(this.DistanceSensor.EchoPinNum) || _.isNull(this.DistanceSensor.EchoPinNum)){
+            this.DistanceSensor.EchoPinNum = 24;
         }
-        if(_.isUndefined(testRefreshMinutes) || _.isNull(testRefreshMinutes)){
-            testRefreshMinutes = 1;
+        if(_.isUndefined(this.DistanceSensor.MaxDistance) || _.isNull(this.DistanceSensor.MaxDistance)){
+            this.DistanceSensor.MaxDistance = 2900;
         }
-        if(_.isUndefined(testFunction) || typeof testFunction !== 'function'){
-            testFunction = function(){
-                this.SetCurrentDistance(Math.random() * this.Config.MaxDistance);
-            }
+        if(_.isUndefined(this.DistanceSensor.MinDistance) || _.isNull(this.DistanceSensor.MinDistance)){
+            this.DistanceSensor.MinDistance = 0;
         }
-        if(_.isUndefined(maxDistance) || _.isNull(maxDistance)){
-            maxDistance = 2900;
-        }
-        if(_.isUndefined(minDistance) || _.isNull(minDistance)){
-            minDistance = 0;
-        }
-        if(_.isUndefined(maxHistoryLength) || _.isNull(maxHistoryLength)){
-            maxHistoryLength = 3;
-        }
-        if(_.isUndefined(mqttUrl) || _.isNull(mqttUrl)){
-            mqttUrl = 'mqtt://xxx.xxx.xxx.xxx:1883';
+        if(_.isUndefined(this.DistanceSensor.MaxHistoryLength) || _.isNull(this.DistanceSensor.MaxHistoryLength)){
+            this.DistanceSensor.MaxHistoryLength = 3;
         }
         // end section of setting defaults
-
-        // Construct the configuration objects based on the values
-        this.Web = {
-            ListenOnPort: webListenOnPort
-        };
-
-        let mqttClient = new MqttClient(mqttUrl);
-
-        this.MqttClient = mqttClient;
-        this.DistanceSensor = {
-            TriggerPinNum: triggerPinNum,
-            EchoPinNum: echoPinNum,
-            MaxDistance: maxDistance,
-            MinDistance: minDistance,
-            MaxHistoryLength: maxHistoryLength,
-            Test: {
-                RefreshMinutes: testRefreshMinutes,
-                TestFunction: testFunction
-            },
-            DistanceChanged: _.bind(mqttClient.DistanceChanged, mqttClient)
-        };
     }
 }
