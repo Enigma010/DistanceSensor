@@ -20,6 +20,7 @@ module.exports = class Config{
             MaxDistance: argv.maxDistance,
             MinDistance: argv.minDistance,
             MaxHistoryLength: argv.maxHistoryLength,
+            DistanceChangedInvokeInterval: argv.distanceChangedInvokeInterval,
             Mqtt: {
                 Url: argv.mqttUrl,
                 Options: mqttOptions,

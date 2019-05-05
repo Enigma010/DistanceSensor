@@ -47,7 +47,7 @@ module.exports = class DistanceSensor{
         }
     }
 
-    SetCurrentDistance(distance){
+    HandleCurrentDistance(distance){
         // When I was testing the distance sensor I saw intermittant distances that didn't make much sense, I
         // figured these were just errant reading from the sensor, so this function keeps track of the last
         // X readings so we can disregard the current reading if necessary
@@ -62,10 +62,7 @@ module.exports = class DistanceSensor{
 
         // Check if the current reading is valid if it is then use is
         if(this.IsValidDistance(distance)){
-            this.CurrentDistance = distance;
-            if(this.Config.DistanceChanged !== undefined){
-                this.Config.DistanceChanged(distance);
-            }
+            this.SetCurrentDistance(distance);
             return;
         }
 
@@ -73,9 +70,38 @@ module.exports = class DistanceSensor{
         // reading and use that instead
         _.forEach(this.DistanceHistory, _.bind(function(checkDistance){
             if(this.IsValidDistance(checkDistance)){
-                this.CurrentDistance = checkDistance;
+                this.SetCurrentDistance(checkDistance);
             }
         }, this));
+    }
+
+    SetCurrentDistance(distance){
+        // Update the property that stores the current distance
+        this.CurrentDistance = distance;
+
+        // Check to see if there's a method to invoke when the distance changes
+        if(!_.isUndefined(this.Config.DistanceChanged)){
+            // Check to see if there's a configured internal that should be respected between invoking the distance changed
+            // function
+            if(!_.isUndefined(this.Config.DistanceChangedInvokeInterval) && this.Config.DistanceChangedInvokeInterval > 0){
+                
+                // Calculate the time betwen the last invocation
+                let now = (new Date).getTime();
+                let diff = now - this.LastDistanceChangedInvoke;
+                
+                // If the last time invoked was never or the difference is greater than the configured interval then invoke
+                // the distance changed function
+                if(_.isUndefined(this.LastDistanceChangedInvoke) || (diff > this.Config.DistanceChangedInvokeInterval)){
+                    this.LastDistanceChangedInvoke = (new Date).getTime();
+                    this.Config.DistanceChanged(distance);
+                }
+                return;
+            }
+
+            // Save the last time invoked and invoke the distance changed method
+            this.LastDistanceChangedInvoke = (new Date).getTime();
+            this.Config.DistanceChanged(distance);
+        }
     }
 
     IsValidDistance(distance){
@@ -90,7 +116,7 @@ module.exports = class DistanceSensor{
             const endTick = tick;
             // Unsigned 32 bit arithmetic
             const diff = (endTick >> 0) - (this.StartTick >> 0); 
-            this.SetCurrentDistance(diff / 2 / this.MICROSECDONDS_PER_CM);
+            this.HandleCurrentDistance(diff / 2 / this.MICROSECDONDS_PER_CM);
           }      
     }
 }
