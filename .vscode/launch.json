@@ -24,13 +24,19 @@
                 "--colors",
                 "${workspaceFolder}/test/**/*.js"
             ],
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+            "console": "integratedTerminal"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Run",
-            "program": "${workspaceFolder}\\index.js"
+            "program": "${workspaceFolder}\\index.js",
+            "console": "integratedTerminal",
+            "args": [
+                "--loggingDir",
+                "..\\Data\\DistanceSensor"
+            ]
         }
     ]
 }

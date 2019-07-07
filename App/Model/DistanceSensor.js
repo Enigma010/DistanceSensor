@@ -1,12 +1,11 @@
 // This worked on my local machine but when I tried to use this code on the raspberry pi it stopped working
 // I was attempting to use this for conditional compile so I could run this on my local machine without having
 // The distance sensor hardware and thus the pigpio driver would fail to load
-// if(typeof process.env.NODE_ENV === 'undefined' || process.env.NODE_ENV !== 'development'){
-//     const Gpio = require('pigpio').Gpio;
-// }
-
-const Gpio = require('pigpio').Gpio;
 const _ = require('lodash');
+
+if(_.isUndefined(process.env.NODE_ENV) || (!_.isUndefined(process.env.NODE_ENV) && process.env.NODE_ENV !== 'development')){
+    const Gpio = require('pigpio').Gpio;
+}
 
 module.exports = class DistanceSensor{
     constructor(config){
@@ -43,7 +42,9 @@ module.exports = class DistanceSensor{
         }
         else{
             // Otherwise we're in a testing mode, invoke the test function to simulate readings
-            setInterval(_.bind(this.Config.Test.TestFunction, this), this.Config.Test.RefreshMinutes * 60 * 1000);
+            setInterval(_.bind(function() {
+                this.HandleCurrentDistance(this.Config.Test.TestFunction());
+            }, this), this.Config.Test.RefreshSeconds * 1000);
         }
     }
 
@@ -66,6 +67,10 @@ module.exports = class DistanceSensor{
             return;
         }
 
+        if(this.Config.Logger){
+            this.Config.Logger.warn((new Date()) + ' - Invalid distance: ' + distance);
+        }
+
         // The current reading isn't valid, go through the history and find the latest valid
         // reading and use that instead
         _.forEach(this.DistanceHistory, _.bind(function(checkDistance){
@@ -77,6 +82,9 @@ module.exports = class DistanceSensor{
 
     SetCurrentDistance(distance){
         // Update the property that stores the current distance
+        if(this.Config.Logger){
+            this.Config.Logger.info((new Date()) + ' - Distance changed: ' + distance);
+        }
         this.CurrentDistance = distance;
 
         // Check to see if there's a method to invoke when the distance changes
@@ -93,6 +101,9 @@ module.exports = class DistanceSensor{
                 // the distance changed function
                 if(_.isUndefined(this.LastDistanceChangedInvoke) || (diff > this.Config.DistanceChangedInvokeInterval)){
                     this.LastDistanceChangedInvoke = (new Date).getTime();
+                    if(this.Config.Logger){
+                        this.Config.Logger.info((new Date()) + ' - Invoking DistanceChanged call with new distance: ' + distance);
+                    }
                     this.Config.DistanceChanged(distance);
                 }
                 return;
