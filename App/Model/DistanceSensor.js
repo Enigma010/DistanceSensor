@@ -1,11 +1,12 @@
+const _ = require('lodash');
+
 // This worked on my local machine but when I tried to use this code on the raspberry pi it stopped working
 // I was attempting to use this for conditional compile so I could run this on my local machine without having
 // The distance sensor hardware and thus the pigpio driver would fail to load
-const _ = require('lodash');
-
-if(_.isUndefined(process.env.NODE_ENV) || (!_.isUndefined(process.env.NODE_ENV) && process.env.NODE_ENV !== 'development')){
-    const Gpio = require('pigpio').Gpio;
-}
+// if(_.isUndefined(process.env.NODE_ENV) || (!_.isUndefined(process.env.NODE_ENV) && process.env.NODE_ENV !== 'development')){
+//     const Gpio = require('pigpio').Gpio;
+// }
+const Gpio = require('pigpio').Gpio;
 
 module.exports = class DistanceSensor{
     constructor(config){
