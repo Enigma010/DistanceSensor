@@ -20,8 +20,8 @@ module.exports = class Server{
 
         if(!_.isUndefined(sensorConfig) && !_.isUndefined(sensorConfig.Mqtt) && !_.isUndefined(sensorConfig.Mqtt.Url)
         && sensorConfig.Mqtt.Url){
-            sensorConfig.Mqtt.Client = new MqttClient(sensorConfig.Mqtt.Url, sensorConfig.Mqtt.Options, sensorConfig.Mqtt.ChannelPrefix, sensorConfig.Mqtt.Client);
-            sensorConfig.DistanceChanged = _.bind(sensorConfig.Mqtt.Client.DistanceChanged);
+            sensorConfig.Mqtt.Client = new MqttClient(sensorConfig.Mqtt.Url, sensorConfig.Mqtt.Options, sensorConfig.Mqtt.ChannelPrefix, sensorConfig.Logger);
+            sensorConfig.DistanceChanged = _.bind(sensorConfig.Mqtt.Client.DistanceChanged, sensorConfig.Mqtt.Client);
         }
 
         // Finish setup
