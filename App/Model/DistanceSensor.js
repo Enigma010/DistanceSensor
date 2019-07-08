@@ -11,9 +11,12 @@ module.exports = class DistanceSensor{
     constructor(config){
         this.Config = config;
         // Only use the hardware if you have the pigpio library defined otherwise it's in a test mode
-        if(typeof Gpio !== 'undefined'){
+        if(!this.InTestMode()){
             this.Trigger = new Gpio(this.Config.TriggerPinNum, {mode: Gpio.OUTPUT});
             this.Echo = new Gpio(this.Config.EchoPinNum, {mode: Gpio.INPUT, alert: true});
+        }
+        if(this.Config.Logger){
+            this.Config.Logger.info((new Date()) + ' - Distance sensor is running in ' + (this.InTestMode() ? 'test' : 'production') + ' mode');
         }
         this.MICROSECDONDS_PER_CM = 1e6/34321;
         this.DistanceHistory = [];
@@ -21,7 +24,7 @@ module.exports = class DistanceSensor{
 
     Start(){
         // Only use the hardware if you have the pigpio library defined otherwise it's in a test mode
-        if(typeof Gpio !== 'undefined'){
+        if(!this.InTestMode()){
             // Note that this code is derived from: https://github.com/fivdi/pigpio
             // Make sure trigger is low
             this.Trigger.digitalWrite(0); 
@@ -129,5 +132,9 @@ module.exports = class DistanceSensor{
             const diff = (endTick >> 0) - (this.StartTick >> 0); 
             this.HandleCurrentDistance(diff / 2 / this.MICROSECDONDS_PER_CM);
           }      
+    }
+
+    InTestMode(){
+        return typeof Gpio === 'undefined';
     }
 }
