@@ -86,9 +86,6 @@ module.exports = class DistanceSensor{
 
     SetCurrentDistance(distance){
         // Update the property that stores the current distance
-        if(this.Config.Logger){
-            this.Config.Logger.info((new Date()) + ' - Distance changed: ' + distance);
-        }
         this.CurrentDistance = distance;
 
         // Check to see if there's a method to invoke when the distance changes

@@ -39,24 +39,22 @@ module.exports = class Config{
         // end test function setup
 
         // Setup logging
-        var transportsArray = [];
-        transportsArray.push(new winston.transports.Console());
         if(argv.loggingDir){
             fs.ensureDirSync(argv.loggingDir);
-            transportsArray.push(new (winston.transports.DailyRotateFile)({
-                filename: 'DistanceSensor-%DATE%.log',
-                datePattern: 'YYYY-MM-DD-HH',
-                zippedArchive: true,
-                maxSize: '20m',
-                maxFiles: '14d',
-                dirname: argv.loggingDir
-              }));
+            this.Logger = winston.createLogger({
+                level: 'info',
+                transports: [
+                    new (winston.transports.DailyRotateFile)({
+                        filename: 'DistanceSensor-%DATE%.log',
+                        datePattern: 'YYYY-MM-DD-HH',
+                        zippedArchive: true,
+                        maxSize: '20m',
+                        maxFiles: '14d',
+                        dirname: argv.loggingDir
+                      })
+                ]
+              });
         }
-
-        this.Logger = winston.createLogger({
-            level: 'info',
-            transports: transportsArray
-          });
         this.DistanceSensor.Logger = this.Logger;
         // end setup logging
 
