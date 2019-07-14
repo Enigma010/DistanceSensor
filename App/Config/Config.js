@@ -63,13 +63,16 @@ module.exports = class Config{
             this.Web.ListenOnPort = 3000;
         }
         if(_.isUndefined(this.DistanceSensor.TriggerPinNum) || _.isNull(this.DistanceSensor.TriggerPinNum)){
-            this.DistanceSensor.TriggerPinNum = 18;
+            this.DistanceSensor.TriggerPinNum = 23;
         }
         if(_.isUndefined(this.DistanceSensor.EchoPinNum) || _.isNull(this.DistanceSensor.EchoPinNum)){
             this.DistanceSensor.EchoPinNum = 24;
         }
         if(_.isUndefined(this.DistanceSensor.MaxDistance) || _.isNull(this.DistanceSensor.MaxDistance)){
             this.DistanceSensor.MaxDistance = 2900;
+        }
+        if(_.isUndefined(this.DistanceSensor.DistanceChangedInvokeInterval) || _.isNull(this.DistanceSensor.DistanceChangedInvokeInterval)){
+            this.DistanceSensor.DistanceChangedInvokeInterval = 60000;
         }
         if(_.isUndefined(this.DistanceSensor.MinDistance) || _.isNull(this.DistanceSensor.MinDistance)){
             this.DistanceSensor.MinDistance = 0;
