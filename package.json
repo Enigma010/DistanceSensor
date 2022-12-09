@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Enigma010/DistanceSensor#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "fs-extra": "^7.0.1",
     "lodash": "^4.17.11",
     "mqtt": "^2.18.8",
